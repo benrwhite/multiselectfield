@@ -1,0 +1,15 @@
+.multiselect .middleColumn {
+  height: 210px;
+}
+
+.multiselect .panel {
+  float: left;
+  text-align: center;
+}
+
+.multiselect select {
+  padding: 5px;
+  margin: 5px;
+  height: 200px;
+  min-width: 200px;
+}
