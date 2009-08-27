@@ -1,39 +1,46 @@
 (function($){
-  // SilverStripe loader
-  SSMultiSelectFieldLoader = function(){
-    var multiSelectField = this;
-    $('.add', this).click(function(){
-      var source = $('select:eq(0)', multiSelectField);
-      var destination = $('select:eq(1)', multiSelectField);
-      var hidden = $('input:eq(0)', multiSelectField);
-      var addedValues = source.val();
-      addedValues.push(hidden.val());
-      hidden.val(addedValues.join(','));
-      return !$('option:selected', source).remove().appendTo(destination);
-    });
-    $('.remove', this).click(function(){
-      var source = $('select:eq(0)', multiSelectField);
-      var destination = $('select:eq(1)', multiSelectField);
-      var hidden = $('input:eq(0)', multiSelectField);
-      var newValues = new Array();
-      $('option:not(:selected)', destination).each(function(){
-        newValues.push(this.value);
-      });
-      hidden.val(newValues.join(','));
-      return !$('option:selected', destination).remove().appendTo(source);
-    });
-    var fieldForm = $(this).parents('form:eq(0)');
-    fieldForm.submit(function(){
-      $('select:eq(1) option', multiSelectField).each(function(i){
-        $(this).attr("selected", "selected");
-      });
-    });
-  }
-  if (typeof $(document).livequery != 'undefined') {
-    $('div.multiselect').livequery(SSMultiSelectFieldLoader);
-  }
-  else 
-    $(document).ready(function(){
-      $('div.multiselect').each(SSMultiSelectFieldLoader);
-    });
+
+    // Initialise multiselect field
+    multiSelectFieldInitialise = function(){
+        var multiSelectField = $(this);
+        var sourceField = $('select', multiSelectField);
+        
+        // Add source, destination and control fields
+        sourceField.addClass('hidden');
+        sourceField.before('<select class="multiselect-unselected" multiple="multiple"></select>');
+        sourceField.before('<div class="multiselect-controls"><p><button class="multiselect-add">Add &gt;</button></p><p><button class="multiselect-remove">&lt; Remove</button></p></div>');
+        sourceField.before('<select class="multiselect-selected" multiple="multiple"></select>');
+        
+        // Move unselected items to source copy selected items to dest
+        var selectedField = $('.multiselect-selected', multiSelectField);
+        var unselectedField = $('.multiselect-unselected', multiSelectField);
+        $('option:not(:selected)', sourceField).appendTo(unselectedField);
+        $('option:selected', sourceField).clone().appendTo(selectedField).attr('selected', '');
+        
+        // Configure controls
+        $('.multiselect-add', multiSelectField).click(function(){
+            $('option:selected', unselectedField).appendTo(selectedField).attr('selected', '');
+            $('option', sourceField).remove();
+            sourceField.append($('option', selectedField).clone());
+            $('option', sourceField).attr('selected', 'selected');
+            return false;
+        });
+        $('.multiselect-remove', multiSelectField).click(function(){
+            $('option:selected', selectedField).appendTo(unselectedField).attr('selected', '');
+            $('option', sourceField).remove();
+            sourceField.append($('option', selectedField).clone());
+            $('option', sourceField).attr('selected', 'selected');
+            return false;
+        });
+    }
+    
+    if (typeof $(document).livequery != 'undefined') {
+        $('.multiselect').livequery(multiSelectFieldInitialise);
+    }
+    else {
+        $(document).ready(function(){
+            $('.multiselect').each(multiSelectFieldInitialise);
+        });
+    }
+    
 })(jQuery);

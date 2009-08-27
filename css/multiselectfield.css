@@ -2,14 +2,19 @@
   height: 210px;
 }
 
-.multiselect .panel {
+.multiselect-controls {
   float: left;
   text-align: center;
 }
 
 .multiselect select {
+  float: left;
   padding: 5px;
   margin: 5px;
   height: 200px;
   min-width: 200px;
+}
+
+.multiselect select.hidden {
+  display: none;
 }
