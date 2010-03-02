@@ -1,11 +1,11 @@
-<?php 
+<?php
 class MultiSelectField extends CheckboxSetField {
-  /* 
+  /*
    * Based on CheckboxSetField with the following changes:
    * - Renders as a standard listbox (select with multiple option)
    * - Transformed with javascript (jQuery) to a pair of listboxes showing selected and unselected options
    * - $source must be an associative array (use toDropdownMap())
-   * - $value must be a simple array  
+   * - $value must be a simple array
    */
 
   // Generate field HTML
@@ -33,22 +33,28 @@ class MultiSelectField extends CheckboxSetField {
     foreach($source as $index => $item) {
       $selected = (isset($value[$index])) ? 'selected' : '';
       $content .= "<option $selected value=\"$index\">$item</option>";
-    }    
-    
+    }
+
     return $this->createTag('select', $attributes, $content);
   }
 
   // Save value to dataobject
   public function saveInto(DataObject $record) {
     $fieldName = $this->name;
-    if ($fieldName && ($record->has_many($fieldName) || $record->many_many($fieldName))) {
-      $record->$fieldName()->setByIDList($this->value);
+
+    // TODO - SiteTree admin seems to serialise value, whilst modeladmin doesn't
+    // this explodes the serialised string, but there is probably a more elegant solution
+    $valueArray = (isset($this->value[0]) && strpos($this->value[0],',')) ? explode(',',$this->value[0]) : $this->value;
+
+		if ($fieldName && ($record->has_many($fieldName) || $record->many_many($fieldName))) {
+    	// Set related records
+      $record->$fieldName()->setByIDList($valueArray);
     } else {
-      $record->$fieldName = $this->value;
+      $record->$fieldName = implode(', ',$valueArray);
     }
   }
-  
-  // Get array of selected IDs 
+
+  // Get array of selected IDs
   public function getSelected() {
     $value = $this->value;
     // If value not set, try to get it from the form
@@ -67,7 +73,7 @@ class MultiSelectField extends CheckboxSetField {
     return $value;
   }
 
-  // Get array of unselected IDs 
+  // Get array of unselected IDs
   public function getUnselected() {
     $items = array();
     $selected = $this->getSelected();
@@ -79,7 +85,7 @@ class MultiSelectField extends CheckboxSetField {
     }
     return $items;
   }
-  
+
   // Return list of IDs for read only
   public function performReadonlyTransformation() {
     $values = implode(', ',$this->getSelected());
@@ -87,6 +93,6 @@ class MultiSelectField extends CheckboxSetField {
     $field->setForm($this->form);
     return $field;
   }
-  
+
 }
 ?>
