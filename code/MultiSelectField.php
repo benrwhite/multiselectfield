@@ -11,7 +11,7 @@ class MultiSelectField extends CheckboxSetField {
   // Generate field HTML
   function Field() {
     Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-    Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery_improvements.js");
+    Requirements::javascript(THIRDPARTY_DIR."/jquery-livequery/jquery.livequery.js");
     Requirements::javascript("multiselectfield/javascript/multiselectfield.js");
     Requirements::css('multiselectfield/css/multiselectfield.css');
     // Suffix [] to name to allow multiple values
