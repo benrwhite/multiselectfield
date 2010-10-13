@@ -21,7 +21,7 @@ Example use:
   new MultiSelectField(
     "ThingPages", // Relationship
     "Related Thing Pages", // Field name
-    $source->toDropdownMap('ID','Title') // Source records (array)
+    $source->map('ID','Title') // Source records (array)
   )
 
 
